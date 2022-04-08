@@ -1,22 +1,65 @@
 
 import os
+from collections import defaultdict
 
 badwords = ["de", "het", "een", "zijn", "hebben", "heb", "ben", "bent", "hebt", "heeft", "had", "was", "waren", "hadden", "ik", "jij", "wij", "hij", "zij", "hun", "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht"]
 
 sentence = "ik heb pech"
 
 outputlist = []
+sentencelist = []
 
+fulldomains = False
+
+def outputevaluator(outputlist):
+    global sentencelist
+    #add top 3 elements with top 3 scores to sentencelist
+    if len(outputlist) == 1:
+        sentencelist.append(outputlist[0][0],3)
+        return
+    
+    if len(outputlist) == 2:
+        if outputlist[0][1] == outputlist[1][1]:
+            sentencelist.append((outputlist[0][0],3))
+            sentencelist.append((outputlist[1][0],3))
+        else:
+            sentencelist.append((outputlist[0][0],3))
+            sentencelist.append((outputlist[1][0],2))
+        return
+    
+    if len(outputlist) >= 3:
+        if outputlist[0][1] == outputlist[1][1]:
+            sentencelist.append((outputlist[0][0],3))
+            sentencelist.append((outputlist[1][0],3))
+            if outputlist[1][1] == outputlist[2][1]:
+                sentencelist.append((outputlist[2][0],3))
+            else:
+                sentencelist.append((outputlist[2][0],1))
+        else: 
+            sentencelist.append((outputlist[0][0],3))
+            if outputlist[1][1] == outputlist[2][1]:
+                sentencelist.append((outputlist[1][0],2))
+                sentencelist.append((outputlist[2][0],2))
+            else:
+                sentencelist.append((outputlist[1][0],2))
+                sentencelist.append((outputlist[2][0],1))                
+        return
+        
 def trim_cat(cwd, f, le):
 
     f = f.replace(str(cwd),"")
     f = f[1:]
     f = f.replace(".txt","")
 
-    if le == 1:
+    if fulldomains == True:
+        if le == 1:
+            slash = f.find("\\")
+            if slash != -1:
+                f = f[slash+1:]
+    else:
         slash = f.find("\\")
         if slash != -1:
-            f = f[slash+1:]
+            f = f[:slash]
 
     return f
                             
@@ -57,26 +100,45 @@ def get_counts(word):
 
                 f = trim_cat(cwd, f, len(os.listdir(folder)))
 
-                if totalcount > 0 and (f.find("alg\\") == -1 and not (count3 == 1 and totalcount == 1)): #f.find("factotum") == -1 and
+                if totalcount > 0 and (f.find("alg") == -1): #and not (count3 == 1 and totalcount == 1)): #f.find("factotum") == -1 and
                     outputlist.append((f, totalcount))
-                    
 
 def sentencehandler(sentence):
+    global sentencelist
+    
     words = sentence.split()
     for word in words:
-         main(word)
+         out = main_sen(word)
 
+    #assemble list
+    res = defaultdict(int)
+    for i in sentencelist:
+        res[i[0]] += int(i[1])
+            
     #print list
-    for occ in outputlist[:5]:
-        print(occ)
+    print(list(res.items()))
 
     #reset list
-    outputlist = [] 
+    sentencelist = [] 
         
 def main_sen(word):
+    global outputlist
+    global sentencelist
+    
     if word in badwords:
-        return
+        return None
 
+    #stores counts inside outputlist
+    get_counts(word)
+
+    #sort the list on value
+    outputlist.sort(key=lambda y: y[1])
+
+    #reverse it to start high
+    outputlist.reverse()
+
+    #evaluate output
+    outputevaluator(outputlist)
 
 def main(word):
     global outputlist
@@ -85,6 +147,7 @@ def main(word):
         print("word does not have domain")
         return
 
+    #stores counts inside outputlist
     get_counts(word)
 
     #sort the list on value
