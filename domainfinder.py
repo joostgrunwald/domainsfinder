@@ -2,7 +2,8 @@
 import os
 from collections import defaultdict
 
-badwords = ["de", "het", "een", "zijn", "hebben", "heb", "ben", "bent", "hebt", "heeft", "had", "was", "waren", "hadden", "ik", "jij", "wij", "hij", "zij", "hun", "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht"]
+badwords = ["in", "de", "het", "een", "zijn", "hebben", "heb", "ben", "bent", "hebt", "heeft", "had", "was", "waren", "hadden", "ik", "jij", "wij", "hij", "zij", "hun",
+            "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht","klaar","voor","je","jouw","me","mijn","zijn","haar"]
 
 sentence = "ik heb pech"
 
@@ -15,7 +16,7 @@ def outputevaluator(outputlist):
     global sentencelist
     #add top 3 elements with top 3 scores to sentencelist
     if len(outputlist) == 1:
-        sentencelist.append(outputlist[0][0],3)
+        sentencelist.append((outputlist[0][0],4))
         return
     
     if len(outputlist) == 2:
@@ -105,6 +106,7 @@ def get_counts(word):
 
 def sentencehandler(sentence):
     global sentencelist
+    global outputlist
     
     words = sentence.split()
     for word in words:
@@ -118,8 +120,10 @@ def sentencehandler(sentence):
     #print list
     print(list(res.items()))
 
-    #reset list
-    sentencelist = [] 
+    #reset list and dict
+    sentencelist = []
+    outputlist = []
+    res.clear()
         
 def main_sen(word):
     global outputlist
