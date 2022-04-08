@@ -24,6 +24,7 @@ def main(word):
                 file = open(f, 'r')
                 text = file.read()
 
+                #print(file)
                 var1 = " " + word + " "
                 var2 = ";" + word + ";"
                 var3 = " " + word + ";"
@@ -33,7 +34,8 @@ def main(word):
                 count2 = text.count(var2)
                 count3 = text.count(var3)
                 count4 = text.count(var4)
-
+                
+                #print(str(count1), str(count2), str(count3), str(count4))
                 totalcount = count1 + count2 + count3 + count4
                 if totalcount != 0:
 
@@ -47,7 +49,9 @@ def main(word):
                         if slash != -1:
                             f = f[slash+1:]
 
-                    if f.find("factotum") == -1:
+                    #remove algs of count 1
+
+                    if f.find("alg\\") == -1 and not (count3 == 1 and totalcount == 1): #f.find("factotum") == -1 and
                         outputlist.append((f, totalcount))
                     #print(f'{f}: occurrences: {totalcount}')
 
