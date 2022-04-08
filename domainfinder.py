@@ -1,16 +1,39 @@
 
 import os
 
+badwords = ["de", "het", "een", "zijn", "hebben", "heb", "ben", "bent", "hebt", "heeft", "had", "was", "waren", "hadden", "ik", "jij", "wij", "hij", "zij", "hun", "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht"]
 
-def main(word):
+sentence = "ik heb pech"
 
+outputlist = []
+
+def trim_cat(cwd, f, le):
+
+    f = f.replace(str(cwd),"")
+    f = f[1:]
+    f = f.replace(".txt","")
+
+    if le == 1:
+        slash = f.find("\\")
+        if slash != -1:
+            f = f[slash+1:]
+
+    return f
+                            
+def get_counts(word):
     #get current directory
     cwd = os.getcwd()
 
     #get all subfolders of current directory
     subfolders = [ f.path for f in os.scandir(cwd) if f.is_dir() ]
 
-    outputlist = []
+    #create search terms
+    var1 = " " + word + " "
+    var2 = ";" + word + ";"
+    var3 = " " + word + ";"
+    var4 = ";" + word + " "
+
+    global outputlist
 
     #traverse all files inside subfolders of the current directory
     for folder in subfolders:
@@ -24,36 +47,45 @@ def main(word):
                 file = open(f, 'r')
                 text = file.read()
 
-                #print(file)
-                var1 = " " + word + " "
-                var2 = ";" + word + ";"
-                var3 = " " + word + ";"
-                var4 = ";" + word + " "
-
                 count1 = text.count(var1)
                 count2 = text.count(var2)
                 count3 = text.count(var3)
                 count4 = text.count(var4)
-                
                 #print(str(count1), str(count2), str(count3), str(count4))
+
                 totalcount = count1 + count2 + count3 + count4
-                if totalcount != 0:
 
-                    #adjust word
-                    f = f.replace(str(cwd),"")
-                    f = f[1:]
-                    f = f.replace(".txt","")
+                f = trim_cat(cwd, f, len(os.listdir(folder)))
 
-                    if len(os.listdir(folder)) == 1:
-                        slash = f.find("\\")
-                        if slash != -1:
-                            f = f[slash+1:]
+                if totalcount > 0 and (f.find("alg\\") == -1 and not (count3 == 1 and totalcount == 1)): #f.find("factotum") == -1 and
+                    outputlist.append((f, totalcount))
+                    
 
-                    #remove algs of count 1
+def sentencehandler(sentence):
+    words = sentence.split()
+    for word in words:
+         main(word)
 
-                    if f.find("alg\\") == -1 and not (count3 == 1 and totalcount == 1): #f.find("factotum") == -1 and
-                        outputlist.append((f, totalcount))
-                    #print(f'{f}: occurrences: {totalcount}')
+    #print list
+    for occ in outputlist[:5]:
+        print(occ)
+
+    #reset list
+    outputlist = [] 
+        
+def main_sen(word):
+    if word in badwords:
+        return
+
+
+def main(word):
+    global outputlist
+    
+    if word in badwords:
+        print("word does not have domain")
+        return
+
+    get_counts(word)
 
     #sort the list on value
     outputlist.sort(key=lambda y: y[1])
@@ -65,7 +97,19 @@ def main(word):
     for occ in outputlist[:5]:
         print(occ)
 
+    #reset list
+    outputlist = []
+
 while True:
-    word = input("Select a word to find domains for: \n")
-    main(word)
-    print("")
+    inp = input("Do you want to predict domain for a word or a sentence? \nType s for sentence and w for word. \n")
+    if (inp == "s"):
+        sent = input("Select a sentence to find domains for: \n")
+        sentencehandler(sent)
+        print("")
+    elif (inp == "w"):
+        word = input("Select a word to find domains for: \n")
+        main(word)
+        print("")
+    else:
+        print("you should select either w or s")
+    
