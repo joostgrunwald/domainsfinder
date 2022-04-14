@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 
 badwords = ["in", "de", "het", "een", "zijn", "hebben", "heb", "ben", "bent", "hebt", "heeft", "had", "was", "waren", "hadden", "ik", "jij", "wij", "hij", "zij", "hun",
-            "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht","klaar","voor","je","jouw","me","mijn","zijn","haar"]
+            "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht","klaar","voor","je","jouw","me","mijn","zijn","haar","met"]
 
 sentence = "ik heb pech"
 
@@ -29,6 +29,7 @@ def outputevaluator(outputlist):
         return
     
     if len(outputlist) >= 3:
+
         if outputlist[0][1] == outputlist[1][1]:
             sentencelist.append((outputlist[0][0],3))
             sentencelist.append((outputlist[1][0],3))
@@ -43,9 +44,29 @@ def outputevaluator(outputlist):
                 sentencelist.append((outputlist[2][0],2))
             else:
                 sentencelist.append((outputlist[1][0],2))
-                sentencelist.append((outputlist[2][0],1))                
+                sentencelist.append((outputlist[2][0],1))
+
+        if len(outputlist) > 3:
+            if outputlist[3][1] == outputlist[2][1]:
+                sentencelist.append((outputlist[3][0],1))
+
+        if len(outputlist) > 4:
+            if outputlist[4][1] == outputlist[2][1]:
+                sentencelist.append((outputlist[4][0],1))
+
+        if len(outputlist) > 5:
+            if outputlist[5][1] == outputlist[2][1]:
+                sentencelist.append((outputlist[5][0],1))
+
+        if len(outputlist) > 6:
+            if outputlist[6][1] == outputlist[2][1]:
+                sentencelist.append((outputlist[6][0],1))
         return
-        
+
+    #if len(outputlist) > 4:
+     #   if outputlist[3][1] == outputlist[4][1]:
+      #      sentencelist.append((outputlist[4][0], 1))
+
 def trim_cat(cwd, f, le):
 
     f = f.replace(str(cwd),"")
@@ -110,15 +131,16 @@ def sentencehandler(sentence):
     
     words = sentence.split()
     for word in words:
+         outputlist = []
          out = main_sen(word)
 
     #assemble list
     res = defaultdict(int)
     for i in sentencelist:
         res[i[0]] += int(i[1])
-            
-    #print list
-    print(list(res.items()))
+
+    toshow = dict(sorted(res.items(), key=lambda item: item[1]))
+    print(toshow)
 
     #reset list and dict
     sentencelist = []
