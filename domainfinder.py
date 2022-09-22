@@ -7,11 +7,14 @@ from collections import defaultdict
 import spacy_alpino
 
 badwords = ["in", "de", "het", "een", "zijn", "hebben", "heb", "ben", "bent", "hebt", "heeft", "had", "was", "waren", "hadden", "ik", "jij", "wij", "hij", "zij", "hun",
-            "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht", "klaar", "voor", "je", "jouw", "me", "mijn", "zijn", "haar", "met"]
+            "hen", "elk", "wel", "ja", "nee", "of", "aan", "uit", "open", "dicht", "klaar", "voor", "je", "jouw", "me", "mijn", "zijn", "haar", "met", "grijpen", "grijpt",
+            "gaan", "gaat", "ga", "wil", "wilt", "willen", "vind", "vinden", "vindt", "krijg", "krijgen", "kreeg", "kregen", "geven", "geef", "geeft", "neem", "nemen", "nam",
+            "ga", "gaan", "loopt", "moeten", "moet", "best", "laten"
+            ]
 
 coronawords = ["corona", "covid", "covid-19", "ncov", "biontech", "astrazeneca", "moderna", "pfizer", "immuniteit", "intensive", "care", "quarantaine", "viroloog", "vaccin",
                "reproductiefactor", "rivm", "prik", "epidemie", "ic-patienten", "ic", "ic-opname", "sars", "ic-arts", "1.5 meter", "1,5 meter", "isolatie", "besmettingsgraad",
-               "beademing", "besmettingen", "wuhan", "pandemie", "lockdown"]
+               "beademing", "besmettingen", "wuhan", "pandemie", "lockdown", "virus", "ic"]
 
 sentence = "ik heb pech"
 
@@ -63,7 +66,7 @@ def outputevaluator(outputlist):
             sentencelist.append((outputlist[0][0], 3))
             if outputlist[1][1] == outputlist[2][1]:
 
-                #if the the first is twice or more the second one
+                # if the the first is twice or more the second one
                 if outputlist[0][1] > outputlist[1][1] * 2:
                     sentencelist.append((outputlist[1][0], 1))
                     sentencelist.append((outputlist[2][0], 1))
@@ -164,7 +167,7 @@ def sentencehandler(sentence):
         word = str(t.orth_).lower()
         pos = t.pos_
         print(word, pos)
-        if str(pos) in {"VERB", "NOUN", "ADJ", "PROPN"} or word in coronawords:
+        if str(pos) in {"VERB", "NOUN", "ADJ"} or word in coronawords:
             print(f"MATCH:{word} {str(pos)}")
             outputlist = []
             main_sen(word)
